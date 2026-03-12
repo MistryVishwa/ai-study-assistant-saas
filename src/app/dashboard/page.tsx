@@ -167,7 +167,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <AppShell activePath="/dashboard" allowDemo>
+    <AppShell activePath="/dashboard">
       <main className="flex-1 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(250,204,21,0.14),_transparent_55%),linear-gradient(to_bottom_right,_#020617,_#020617)] px-4 pb-6 pt-4 md:px-6">
         <section className="mb-4 overflow-hidden rounded-3xl border border-amber-500/40 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-slate-900/40 p-5 shadow-2xl shadow-amber-500/25 backdrop-blur-2xl md:p-7">
           <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-amber-200">

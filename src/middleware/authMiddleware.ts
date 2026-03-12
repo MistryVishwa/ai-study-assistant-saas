@@ -1,18 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED_PREFIXES = [
-  "/dashboard",
-  "/planner",
-  "/tutor",
-  "/notes",
-  "/flashcards",
-  "/quizzes",
-  "/progress",
-  "/marketplace",
-  "/profile",
-  "/settings",
-];
+const PROTECTED_PREFIXES = ["/profile", "/settings"];
 const AUTH_PREFIXES = ["/login", "/register", "/forgot-password", "/reset-password"];
 
 function isProtectedPath(pathname: string) {
@@ -23,11 +12,6 @@ function isProtectedPath(pathname: string) {
 
 function isAuthPath(pathname: string) {
   return AUTH_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
-}
-
-function allowDemoDashboard(request: NextRequest): boolean {
-  if (request.nextUrl.pathname !== "/dashboard") return false;
-  return request.nextUrl.searchParams.get("demo") === "1";
 }
 
 export async function authMiddleware(request: NextRequest) {
@@ -59,7 +43,7 @@ export async function authMiddleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  if (!user && isProtectedPath(pathname) && !allowDemoDashboard(request)) {
+  if (!user && isProtectedPath(pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", `${pathname}${request.nextUrl.search}`);

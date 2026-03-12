@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 type ProfileRow = {
   id: string;
@@ -136,7 +137,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <AppShell activePath="/profile">
+    <ProtectedRoute>
+      <AppShell activePath="/profile">
       <main className="flex-1 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.14),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(250,204,21,0.12),_transparent_55%),linear-gradient(to_bottom_right,_#020617,_#020617)] px-4 pb-6 pt-4 md:px-6">
         <div className="mx-auto grid max-w-5xl gap-4 md:grid-cols-2">
           <Card className="border-slate-800/70 bg-slate-950/70 shadow-xl shadow-black/60">
@@ -221,6 +223,7 @@ export default function ProfilePage() {
         </div>
       </main>
     </AppShell>
+    </ProtectedRoute>
   );
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { FormEvent, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -323,16 +324,79 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-8 text-slate-100">
-      <Suspense
-        fallback={
-          <div className="w-full max-w-md rounded-3xl border border-slate-800/80 bg-slate-950/90 p-8 text-center text-sm text-slate-400">
-            Loading…
+    <div className="grid min-h-screen grid-cols-1 bg-slate-950 text-slate-100 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+      {/* Brand / marketing side */}
+      <section className="relative hidden overflow-hidden border-r border-slate-800/70 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.22),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(250,204,21,0.18),_transparent_55%),linear-gradient(to_bottom_right,_#020617,_#020617)] px-10 py-10 md:flex md:flex-col md:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-500 to-amber-400 shadow-lg shadow-blue-500/40">
+            <span className="text-sm font-bold tracking-tight text-slate-950">E</span>
           </div>
-        }
-      >
-        <LoginForm />
-      </Suspense>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-300">
+              EduPilot
+            </p>
+            <p className="text-[11px] text-slate-400">AI Study Assistant</p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h1 className="max-w-xl text-3xl font-semibold tracking-tight text-slate-50 lg:text-4xl">
+            A modern workspace for{" "}
+            <span className="bg-gradient-to-r from-blue-400 via-sky-300 to-amber-300 bg-clip-text text-transparent">
+              focused learning
+            </span>
+            .
+          </h1>
+          <p className="max-w-md text-sm text-slate-300/90">
+            Plan your week, generate notes, quizzes, and flashcards, and chat with an AI tutor —
+            all in one sleek dashboard.
+          </p>
+          <div className="flex flex-wrap gap-2 text-xs text-slate-300/90">
+            <span className="rounded-full bg-slate-900/70 px-3 py-1">
+              ✨ AI tutor & notes
+            </span>
+            <span className="rounded-full bg-slate-900/70 px-3 py-1">
+              📊 Progress analytics
+            </span>
+            <span className="rounded-full bg-slate-900/70 px-3 py-1">
+              🧠 Flashcards & quizzes
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/next.svg"
+              alt="Next.js"
+              width={72}
+              height={16}
+              className="dark:invert opacity-80"
+            />
+            <Image
+              src="/vercel.svg"
+              alt="Vercel"
+              width={72}
+              height={16}
+              className="dark:invert opacity-80"
+            />
+          </div>
+          <span>Powered by Next.js, Vercel & Supabase</span>
+        </div>
+      </section>
+
+      {/* Auth card */}
+      <div className="flex items-center justify-center px-4 py-10">
+        <Suspense
+          fallback={
+            <div className="w-full max-w-md rounded-3xl border border-slate-800/80 bg-slate-950/90 p-8 text-center text-sm text-slate-400">
+              Loading…
+            </div>
+          }
+        >
+          <LoginForm />
+        </Suspense>
+      </div>
     </div>
   );
 }

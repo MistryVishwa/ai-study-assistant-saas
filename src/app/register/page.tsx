@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { FormEvent, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -201,14 +202,71 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-400">
-          Loading…
+    <div className="grid min-h-screen grid-cols-1 bg-slate-950 text-slate-100 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+      {/* Brand / marketing side */}
+      <section className="relative hidden overflow-hidden border-r border-slate-800/70 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.22),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(250,204,21,0.18),_transparent_55%),linear-gradient(to_bottom_right,_#020617,_#020617)] px-10 py-10 md:flex md:flex-col md:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-500 to-amber-400 shadow-lg shadow-blue-500/40">
+            <span className="text-sm font-bold tracking-tight text-slate-950">E</span>
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-300">
+              EduPilot
+            </p>
+            <p className="text-[11px] text-slate-400">AI Study Platform</p>
+          </div>
         </div>
-      }
-    >
-      <RegisterForm />
-    </Suspense>
+
+        <div className="space-y-4">
+          <h1 className="max-w-xl text-3xl font-semibold tracking-tight text-slate-50 lg:text-4xl">
+            Set up your{" "}
+            <span className="bg-gradient-to-r from-amber-300 via-amber-200 to-blue-400 bg-clip-text text-transparent">
+              personal AI study hub
+            </span>
+            .
+          </h1>
+          <p className="max-w-md text-sm text-slate-300/90">
+            One workspace for lectures, notes, quizzes, flashcards, and a tutor that never gets
+            tired.
+          </p>
+          <ul className="space-y-1 text-xs text-slate-300/90">
+            <li>• AI-generated notes, quizzes, and flashcards</li>
+            <li>• Smart planner with exam-focused schedules</li>
+            <li>• Progress analytics and learning streaks</li>
+          </ul>
+        </div>
+
+        <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/next.svg"
+              alt="Next.js"
+              width={72}
+              height={16}
+              className="dark:invert opacity-80"
+            />
+            <Image
+              src="/vercel.svg"
+              alt="Vercel"
+              width={72}
+              height={16}
+              className="dark:invert opacity-80"
+            />
+          </div>
+          <span>Runs on modern SaaS stack</span>
+        </div>
+      </section>
+
+      {/* Auth card */}
+      <Suspense
+        fallback={
+          <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-400">
+            Loading…
+          </div>
+        }
+      >
+        <RegisterForm />
+      </Suspense>
+    </div>
   );
 }

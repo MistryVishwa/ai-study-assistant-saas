@@ -6,6 +6,7 @@ import { AppShell } from "@/components/app-shell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 const KEY = "edupilot:notifications";
 
@@ -40,7 +41,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <AppShell activePath="/settings">
+    <ProtectedRoute>
+      <AppShell activePath="/settings">
       <main className="flex-1 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.14),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(250,204,21,0.12),_transparent_55%),linear-gradient(to_bottom_right,_#020617,_#020617)] px-4 pb-6 pt-4 md:px-6">
         <div className="mx-auto grid max-w-4xl gap-4">
           <Card className="border-slate-800/70 bg-slate-950/70 shadow-xl shadow-black/60">
@@ -88,6 +90,7 @@ export default function SettingsPage() {
         </div>
       </main>
     </AppShell>
+    </ProtectedRoute>
   );
 }
 
