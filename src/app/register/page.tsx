@@ -158,7 +158,7 @@ function RegisterForm() {
             disabled={loading}
             className="mt-2 w-full rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-blue-500 px-4 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-amber-500/40 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? "Creating account..." : "Create account with Email"}
+            {loading ? "Creating account..." : "Create account"}
           </button>
         </form>
 
