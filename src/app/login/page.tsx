@@ -118,10 +118,93 @@ function LoginForm() {
         </div>
       </div>
 
-      <h1 className="text-xl font-semibold tracking-tight">Welcome back</h1>
+      <h1 className="text-xl font-semibold tracking-tight">Log in or sign up</h1>
       <p className="mt-1 text-sm text-slate-400">
         Sign in to access your dashboard, notes, and quizzes.
       </p>
+
+      <div className="mt-4">
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={loadingGoogle}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-2.5 text-sm font-medium text-slate-100 hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <span className="h-4 w-4 rounded-full bg-slate-300" />
+          {loadingGoogle ? "Redirecting..." : "Continue with Google"}
+        </button>
+      </div>
+
+      {!otpSent ? (
+        <form className="mt-4 space-y-4" onSubmit={handlePhoneSend}>
+          <div className="space-y-1 text-sm">
+            <label htmlFor="phone" className="text-slate-200">
+              Phone
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              className="w-full rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm outline-none placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-1 focus:ring-blue-400/70"
+              placeholder="+15551234567"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loadingPhoneSend}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-2.5 text-sm font-medium text-slate-100 hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loadingPhoneSend ? "Sending code..." : "Continue with Phone"}
+          </button>
+        </form>
+      ) : (
+        <form className="mt-4 space-y-4" onSubmit={handlePhoneVerify}>
+          <p className="text-xs text-slate-400">
+            Code sent — enter the SMS code to sign in.
+          </p>
+          <div className="space-y-1 text-sm">
+            <label htmlFor="token" className="text-slate-200">
+              SMS code
+            </label>
+            <input
+              id="token"
+              name="token"
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              className="w-full rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm outline-none placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-1 focus:ring-blue-400/70"
+              placeholder="123456"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loadingPhoneVerify}
+            className="mt-2 w-full rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loadingPhoneVerify ? "Verifying..." : "Verify and sign in"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setOtpSent(false);
+              setPhoneForOtp("");
+              setError(null);
+            }}
+            className="w-full text-center text-xs text-slate-400 hover:text-slate-300"
+          >
+            Use a different phone
+          </button>
+        </form>
+      )}
+
+      <div className="mt-6 flex items-center gap-3">
+        <div className="h-px flex-1 bg-slate-800/80" />
+        <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+          OR
+        </span>
+        <div className="h-px flex-1 bg-slate-800/80" />
+      </div>
 
       <form className="mt-6 space-y-4" onSubmit={handleEmailLogin}>
         <div className="space-y-1 text-sm">
@@ -179,84 +262,7 @@ function LoginForm() {
         </button>
       </form>
 
-      {error && (
-        <p className="mt-3 text-sm text-amber-300">{error}</p>
-      )}
-
-      <div className="mt-4">
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          disabled={loadingGoogle}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-2.5 text-sm font-medium text-slate-100 hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <span className="h-4 w-4 rounded-full bg-slate-300" />
-          {loadingGoogle ? "Redirecting..." : "Continue with Google"}
-        </button>
-      </div>
-
-      {!otpSent ? (
-        <form className="mt-4 space-y-4" onSubmit={handlePhoneSend}>
-          <div className="space-y-1 text-sm">
-            <label htmlFor="phone" className="text-slate-200">
-              Phone (SMS code)
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              autoComplete="tel"
-              className="w-full rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm outline-none placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-1 focus:ring-blue-400/70"
-              placeholder="+15551234567"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loadingPhoneSend}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-2.5 text-sm font-medium text-slate-100 hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {loadingPhoneSend ? "Sending code..." : "Send login code"}
-          </button>
-        </form>
-      ) : (
-        <form className="mt-4 space-y-4" onSubmit={handlePhoneVerify}>
-          <p className="text-xs text-slate-400">
-            Code sent — enter the SMS code to sign in.
-          </p>
-          <div className="space-y-1 text-sm">
-            <label htmlFor="token" className="text-slate-200">
-              SMS code
-            </label>
-            <input
-              id="token"
-              name="token"
-              type="text"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              className="w-full rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm outline-none placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-1 focus:ring-blue-400/70"
-              placeholder="123456"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loadingPhoneVerify}
-            className="mt-2 w-full rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {loadingPhoneVerify ? "Verifying..." : "Verify and sign in"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setOtpSent(false);
-              setPhoneForOtp("");
-              setError(null);
-            }}
-            className="w-full text-center text-xs text-slate-400 hover:text-slate-300"
-          >
-            Use a different phone
-          </button>
-        </form>
-      )}
+      {error && <p className="mt-3 text-sm text-amber-300">{error}</p>}
 
       <p className="mt-4 text-center text-xs text-slate-400">
         New to EduPilot?{" "}

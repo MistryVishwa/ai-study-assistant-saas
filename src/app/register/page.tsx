@@ -29,9 +29,11 @@ function RegisterForm() {
     const name = String(formData.get("name") || "");
     const email = String(formData.get("email") || "");
     const password = String(formData.get("password") || "");
+    const goal = String(formData.get("goal") || "");
 
     const { data, error: signUpError } = await signUpWithEmail(email, password, {
       full_name: name,
+      primary_learning_goal: goal || undefined,
     });
 
     if (signUpError) {
@@ -91,7 +93,7 @@ function RegisterForm() {
         <form className="mt-6 space-y-4" onSubmit={handleRegister}>
           <div className="space-y-1 text-sm">
             <label htmlFor="name" className="text-slate-200">
-              Full name
+              Full Name
             </label>
             <input
               id="name"
@@ -140,6 +142,7 @@ function RegisterForm() {
             </label>
             <select
               id="goal"
+              name="goal"
               className="w-full rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm outline-none focus:border-blue-400/70 focus:ring-1 focus:ring-blue-400/70"
               defaultValue="student"
             >

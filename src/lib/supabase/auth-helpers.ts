@@ -31,7 +31,7 @@ export async function signInWithPassword(email: string, password: string) {
 export async function signUpWithEmail(
   email: string,
   password: string,
-  metadata?: { full_name?: string }
+  metadata?: { full_name?: string; primary_learning_goal?: string }
 ) {
   return createClient().auth.signUp({
     email,
