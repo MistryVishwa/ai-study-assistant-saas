@@ -10,7 +10,6 @@ import { NextResponse, type NextRequest } from "next/server";
 
 /** Routes that require a logged-in user */
 const PROTECTED_PREFIXES = [
-  "/dashboard",
   "/notes",
   "/tutor",
   "/voice-assistant",

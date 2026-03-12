@@ -78,7 +78,7 @@ export default function Home() {
               Sign in
             </Link>
             <Link
-              href="/login?next=%2Fdashboard"
+              href="/dashboard?demo=1"
               className="hidden rounded-full bg-gradient-to-r from-blue-500 via-sky-500 to-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 shadow-lg shadow-blue-500/40 backdrop-blur md:inline-flex"
             >
               Start demo
@@ -109,13 +109,13 @@ export default function Home() {
                 </p>
                 <div className="flex flex-wrap gap-3 pt-1 text-xs md:text-sm">
                   <Link
-                    href="/login?next=%2Fdashboard"
+                    href="/dashboard?demo=1"
                     className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2 font-medium text-slate-950 shadow-lg shadow-blue-500/40"
                   >
                     Start demo
                   </Link>
                   <Link
-                    href="/planner"
+                    href="/dashboard?demo=1"
                     className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/50 px-4 py-2 text-slate-200/90"
                   >
                     View study planner

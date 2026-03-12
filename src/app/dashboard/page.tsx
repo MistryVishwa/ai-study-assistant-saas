@@ -38,11 +38,25 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function load() {
+      const isDemo =
+        typeof window !== "undefined" &&
+        new URLSearchParams(window.location.search).get("demo") === "1";
       const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) {
+        if (isDemo) {
+          setUserName("Demo");
+          setStats({
+            weekly_hours: 18.4,
+            topics_done: 12,
+            avg_quiz_score: 82,
+            xp_points: 1240,
+          });
+          setLoading(false);
+          return;
+        }
         router.push("/login");
         return;
       }

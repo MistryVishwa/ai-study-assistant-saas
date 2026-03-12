@@ -24,48 +24,67 @@ function RegisterForm() {
     setError(null);
     setSuccessMessage(null);
     setLoading(true);
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const name = String(formData.get("name") || "");
-    const email = String(formData.get("email") || "");
-    const password = String(formData.get("password") || "");
-    const goal = String(formData.get("goal") || "");
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const name = String(formData.get("name") || "");
+      const email = String(formData.get("email") || "");
+      const password = String(formData.get("password") || "");
+      const goal = String(formData.get("goal") || "");
 
-    const { data, error: signUpError } = await signUpWithEmail(email, password, {
-      full_name: name,
-      primary_learning_goal: goal || undefined,
-    });
+      const { data, error: signUpError } = await signUpWithEmail(email, password, {
+        full_name: name,
+        primary_learning_goal: goal || undefined,
+      });
 
-    if (signUpError) {
-      setError(signUpError.message);
+      if (signUpError) {
+        setError(signUpError.message);
+        setLoading(false);
+        return;
+      }
+
+      if (data.user && data.session) {
+        router.push(nextPath);
+        router.refresh();
+        return;
+      }
+
+      if (data.user && !data.session) {
+        setSuccessMessage("Check your email to confirm your account, then sign in.");
+        setLoading(false);
+        return;
+      }
+
       setLoading(false);
-      return;
-    }
-
-    if (data.user && data.session) {
-      router.push(nextPath);
-      router.refresh();
-      return;
-    }
-
-    if (data.user && !data.session) {
-      setSuccessMessage(
-        "Check your email to confirm your account, then sign in."
-      );
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Unable to create account.";
+      setError(message);
       setLoading(false);
-      return;
     }
-
-    setLoading(false);
   }
 
   async function handleGoogleSignUp() {
     setError(null);
     setSuccessMessage(null);
     setLoadingGoogle(true);
-    const { error: oauthError } = await signInWithGoogle(nextPath);
-    setLoadingGoogle(false);
-    if (oauthError) setError(oauthError.message);
+    try {
+      const { data, error: oauthError } = await signInWithGoogle(nextPath);
+      setLoadingGoogle(false);
+      if (oauthError) {
+        setError(oauthError.message);
+        return;
+      }
+      if (data?.url && typeof window !== "undefined") {
+        window.location.assign(data.url);
+        return;
+      }
+      setError("Unable to start Google sign-up. Please try again.");
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Unable to start Google sign-up.";
+      setLoadingGoogle(false);
+      setError(message);
+    }
   }
 
   return (

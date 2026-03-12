@@ -32,74 +32,108 @@ function LoginForm() {
     e.preventDefault();
     setError(null);
     setLoadingEmail(true);
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const email = String(formData.get("email") || "");
-    const password = String(formData.get("password") || "");
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const email = String(formData.get("email") || "");
+      const password = String(formData.get("password") || "");
 
-    const { error: signInError } = await signInWithPassword(email, password);
+      const { error: signInError } = await signInWithPassword(email, password);
 
-    if (signInError) {
-      setError(
-        signInError.message ||
-          "Please register first or check your password."
-      );
+      if (signInError) {
+        setError(
+          signInError.message ||
+            "Please register first or check your password."
+        );
+        setLoadingEmail(false);
+        return;
+      }
+
+      router.push(nextPath);
+      router.refresh();
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Unable to sign in.";
+      setError(message);
       setLoadingEmail(false);
-      return;
     }
-
-    router.push(nextPath);
-    router.refresh();
   }
 
   async function handleGoogleLogin() {
     setError(null);
     setLoadingGoogle(true);
-    const { error: oauthError } = await signInWithGoogle(nextPath);
-    setLoadingGoogle(false);
-    if (oauthError) setError(oauthError.message);
+    try {
+      const { data, error: oauthError } = await signInWithGoogle(nextPath);
+      setLoadingGoogle(false);
+      if (oauthError) {
+        setError(oauthError.message);
+        return;
+      }
+      if (data?.url && typeof window !== "undefined") {
+        window.location.assign(data.url);
+        return;
+      }
+      setError("Unable to start Google sign-in. Please try again.");
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Unable to start Google sign-in.";
+      setLoadingGoogle(false);
+      setError(message);
+    }
   }
 
   async function handlePhoneSend(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const phone = String(formData.get("phone") || "").trim();
-    if (!phone) {
-      setError("Enter a phone number (E.164, e.g. +15551234567).");
-      return;
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const phone = String(formData.get("phone") || "").trim();
+      if (!phone) {
+        setError("Enter a phone number (E.164, e.g. +15551234567).");
+        return;
+      }
+      setLoadingPhoneSend(true);
+      const { error: otpError } = await signInWithOtpPhone(phone);
+      setLoadingPhoneSend(false);
+      if (otpError) {
+        setError(otpError.message);
+        return;
+      }
+      setPhoneForOtp(phone);
+      setOtpSent(true);
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Unable to send SMS code.";
+      setLoadingPhoneSend(false);
+      setError(message);
     }
-    setLoadingPhoneSend(true);
-    const { error: otpError } = await signInWithOtpPhone(phone);
-    setLoadingPhoneSend(false);
-    if (otpError) {
-      setError(otpError.message);
-      return;
-    }
-    setPhoneForOtp(phone);
-    setOtpSent(true);
   }
 
   async function handlePhoneVerify(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const token = String(formData.get("token") || "").trim();
-    if (!token || !phoneForOtp) {
-      setError("Enter the code sent to your phone.");
-      return;
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const token = String(formData.get("token") || "").trim();
+      if (!token || !phoneForOtp) {
+        setError("Enter the code sent to your phone.");
+        return;
+      }
+      setLoadingPhoneVerify(true);
+      const { error: verifyError } = await verifyPhoneOtp(phoneForOtp, token);
+      setLoadingPhoneVerify(false);
+      if (verifyError) {
+        setError(verifyError.message);
+        return;
+      }
+      router.push(nextPath);
+      router.refresh();
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Unable to verify code.";
+      setLoadingPhoneVerify(false);
+      setError(message);
     }
-    setLoadingPhoneVerify(true);
-    const { error: verifyError } = await verifyPhoneOtp(phoneForOtp, token);
-    setLoadingPhoneVerify(false);
-    if (verifyError) {
-      setError(verifyError.message);
-      return;
-    }
-    router.push(nextPath);
-    router.refresh();
   }
 
   return (
