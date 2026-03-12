@@ -1,41 +1,67 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EduPilot – AI Study Assistant
 
-## Getting Started
+Modern SaaS dashboard for students: authentication, AI tutor (Gemini), notes/quiz/flashcards generators, study planner, progress analytics, and a simple marketplace.
 
-First, run the development server:
+## Tech stack
+
+- Next.js 14 (App Router) + TypeScript
+- Tailwind CSS + shadcn/ui-style components
+- Supabase (Auth + Postgres + Storage)
+- Google AI Studio Gemini API
+- Recharts (analytics)
+- Zustand (state)
+
+## Setup
+
+1) Install dependencies
+
+```bash
+npm install
+```
+
+2) Configure environment variables
+
+Copy `.env.example` → `.env.local` and add:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `GEMINI_API_KEY` (server-only; do NOT prefix with `NEXT_PUBLIC_`)
+
+3) Create Supabase database schema
+
+Apply migrations in `supabase/migrations/` to your Supabase project.
+
+4) Create Supabase Storage buckets (public)
+
+- `avatars` (for profile pictures)
+- `materials` (for marketplace uploads)
+
+5) Run the app
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/login`, `/register`, `/forgot-password`, `/reset-password` (Supabase Auth)
+- `/dashboard` (widgets + analytics)
+- `/tutor` (Gemini chat, Markdown answers)
+- `/notes` (PDF/text → notes via Gemini, save to DB)
+- `/quizzes` (generate quiz, score + save)
+- `/flashcards` (generate + spaced repetition)
+- `/planner` (calendar + AI schedule generation + save tasks)
+- `/progress` (charts + daily logging)
+- `/marketplace` (upload/list materials)
+- `/profile`, `/settings`
 
-## Learn More
+## Gemini endpoints
 
-To learn more about Next.js, take a look at the following resources:
+- `POST /api/ai/tutor`
+- `POST /api/ai/notes`
+- `POST /api/ai/quiz`
+- `POST /api/ai/flashcards`
+- `POST /api/ai/planner`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-=======
-# ai-study-assistant-saas
-An AI Study Assistant is an application that uses Artificial Intelligence (AI) to help students learn faster, understand concepts better, and manage their studies efficiently. It acts like a personal digital tutor that is available anytime.
->>>>>>> 0fcfa9a8fc31cdef8fa2b7560039b4d88ab4c946

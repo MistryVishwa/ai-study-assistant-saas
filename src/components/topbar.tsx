@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { UserMenu } from "@/components/user-menu";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { format } from "date-fns";
 
 export function Topbar() {
+  const nowLabel = format(new Date(), "EEEE, dd MMM yyyy · HH:mm");
   return (
     <header className="flex items-center justify-between gap-4 border-b border-slate-800/70 bg-slate-950/70 px-4 py-3 shadow-lg shadow-black/40 backdrop-blur-2xl md:px-6">
       <div className="flex flex-1 items-center gap-3">
@@ -10,13 +13,13 @@ export function Topbar() {
             Dashboard
           </p>
           <p className="text-[11px] text-slate-500">
-            Wednesday, 11 March 2026 · 13:35
+            {nowLabel}
           </p>
         </div>
         <div className="relative flex-1 max-w-xl">
           <input
             type="search"
-            placeholder="Search anything… lectures, topics, quizzes"
+            placeholder="Ask the AI tutor…"
             className="w-full rounded-full border border-slate-800/70 bg-slate-900/80 px-4 py-2 text-sm text-slate-100 shadow-inner shadow-black/60 outline-none placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-1 focus:ring-blue-400/70"
           />
         </div>
@@ -38,6 +41,7 @@ export function Topbar() {
         >
           Ask AI Tutor
         </Link>
+        <ThemeToggle />
         <UserMenu />
       </div>
     </header>
