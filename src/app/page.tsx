@@ -4,49 +4,49 @@ const modules = [
   {
     id: "analytics",
     name: "Study Analytics",
-    href: "#",
+    href: "/dashboard",
     description: "Visualize study hours, quiz scores, and streaks in real time.",
   },
   {
     id: "tasks",
     name: "Today's AI Tasks",
-    href: "#",
+    href: "/dashboard",
     description: "Let EduPilot plan your day with smart task suggestions.",
   },
   {
     id: "tutor",
     name: "AI Tutor Search",
-    href: "#",
+    href: "/tutor",
     description: "Ask questions and get step-by-step explanations instantly.",
   },
   {
     id: "lectures",
     name: "Lecture Library",
-    href: "#",
+    href: "/lectures",
     description: "Upload, organize, and summarize lecture videos and notes.",
   },
   {
     id: "notes",
     name: "AI Notes Generator",
-    href: "#",
+    href: "/notes",
     description: "Turn PDFs, slides, and text into concise revision notes.",
   },
   {
     id: "planner",
     name: "Study Planner",
-    href: "#",
+    href: "/planner",
     description: "Generate exam prep plans and smart study schedules.",
   },
   {
     id: "flashcards",
     name: "Flashcards & SRS",
-    href: "#",
+    href: "/flashcards",
     description: "Create AI flashcards and practice with spaced repetition.",
   },
   {
     id: "quizzes",
     name: "Quiz System",
-    href: "#",
+    href: "/quizzes",
     description: "Generate MCQ, T/F, and short-answer quizzes with scoring.",
   },
 ];
@@ -71,12 +71,18 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-4 text-xs md:text-sm">
-            <button className="rounded-full border border-slate-700/70 bg-slate-900/60 px-4 py-2 text-slate-200 shadow-sm shadow-black/40 backdrop-blur-md transition hover:border-blue-400/70 hover:text-blue-100">
+            <Link
+              href="/login"
+              className="rounded-full border border-slate-700/70 bg-slate-900/60 px-4 py-2 text-slate-200 shadow-sm shadow-black/40 backdrop-blur-md transition hover:border-blue-400/70 hover:text-blue-100"
+            >
               Sign in
-            </button>
-            <button className="hidden rounded-full bg-gradient-to-r from-blue-500 via-sky-500 to-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 shadow-lg shadow-blue-500/40 backdrop-blur md:inline-flex">
-              Start a study session
-            </button>
+            </Link>
+            <Link
+              href="/login?next=%2Fdashboard"
+              className="hidden rounded-full bg-gradient-to-r from-blue-500 via-sky-500 to-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 shadow-lg shadow-blue-500/40 backdrop-blur md:inline-flex"
+            >
+              Start demo
+            </Link>
           </div>
         </header>
 
@@ -102,12 +108,18 @@ export default function Home() {
                   and busy professionals.
                 </p>
                 <div className="flex flex-wrap gap-3 pt-1 text-xs md:text-sm">
-                  <button className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2 font-medium text-slate-950 shadow-lg shadow-blue-500/40">
-                    Launch dashboard
-                  </button>
-                  <button className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/50 px-4 py-2 text-slate-200/90">
+                  <Link
+                    href="/login?next=%2Fdashboard"
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2 font-medium text-slate-950 shadow-lg shadow-blue-500/40"
+                  >
+                    Start demo
+                  </Link>
+                  <Link
+                    href="/planner"
+                    className="inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/50 px-4 py-2 text-slate-200/90"
+                  >
                     View study planner
-                  </button>
+                  </Link>
                 </div>
                 <div className="mt-5 grid grid-cols-3 gap-3 text-xs text-slate-300/90 md:text-sm">
                   <div className="rounded-2xl border border-slate-800/70 bg-slate-950/40 p-3">
@@ -159,21 +171,21 @@ export default function Home() {
               </p>
               <div className="mt-3 space-y-2 text-xs">
                 <Link
-                  href="#"
+                  href="/tutor"
                   className="flex items-center justify-between rounded-2xl border border-slate-800/70 bg-slate-900/60 px-3 py-2 transition hover:border-blue-400/80 hover:bg-slate-900"
                 >
                   <span>Ask the AI Tutor</span>
                   <span className="text-[11px] text-blue-300">Chat</span>
                 </Link>
                 <Link
-                  href="#"
+                  href="/notes"
                   className="flex items-center justify-between rounded-2xl border border-slate-800/70 bg-slate-900/60 px-3 py-2 transition hover:border-amber-300/80 hover:bg-slate-900"
                 >
                   <span>Generate notes from PDF</span>
                   <span className="text-[11px] text-amber-300">Notes</span>
                 </Link>
                 <Link
-                  href="#"
+                  href="/planner"
                   className="flex items-center justify-between rounded-2xl border border-slate-800/70 bg-slate-900/60 px-3 py-2 transition hover:border-emerald-300/80 hover:bg-slate-900"
                 >
                   <span>Plan my exam week</span>
@@ -213,10 +225,10 @@ export default function Home() {
         <footer className="mt-6 flex items-center justify-between text-[11px] text-slate-500">
           <p>© {new Date().getFullYear()} EduPilot. Built for focused learning.</p>
           <div className="flex gap-3">
-            <Link href="#" className="hover:text-slate-300">
+            <Link href="/privacy" className="hover:text-slate-300">
               Privacy
             </Link>
-            <Link href="#" className="hover:text-slate-300">
+            <Link href="/terms" className="hover:text-slate-300">
               Terms
             </Link>
           </div>

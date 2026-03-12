@@ -1,5 +1,9 @@
+ "use client";
 import { Sidebar } from "@/components/sidebar";
 import { Topbar } from "@/components/topbar";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 function StatCard({
   label,
@@ -22,6 +26,62 @@ function StatCard({
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState<string>("there");
+  const [stats, setStats] = useState({
+    weekly_hours: 0,
+    topics_done: 0,
+    avg_quiz_score: 0,
+    xp_points: 0,
+  });
+
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
+      setUserName(
+        (user.user_metadata && user.user_metadata.full_name) ||
+          user.email?.split("@")[0] ||
+          "there"
+      );
+
+      const { data: summary } = await supabase
+        .from("study_stats")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (summary) {
+        setStats({
+          weekly_hours: summary.weekly_hours ?? 0,
+          topics_done: summary.topics_done ?? 0,
+          avg_quiz_score: summary.avg_quiz_score ?? 0,
+          xp_points: summary.xp_points ?? 0,
+        });
+      }
+
+      setLoading(false);
+    }
+
+    load();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-100">
+        <p className="text-sm text-slate-400">Loading your dashboard…</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-slate-950 text-slate-100">
       <Sidebar activePath="/dashboard" />
@@ -39,7 +99,8 @@ export default function DashboardPage() {
               <h1 className="text-xl font-semibold tracking-tight text-slate-50 md:text-2xl">
                 Welcome back,{" "}
                 <span className="text-amber-200">
-                  Aryan<span className="pl-1">✨</span>
+                  {userName}
+                  <span className="pl-1">✨</span>
                 </span>
               </h1>
             </div>
@@ -54,23 +115,23 @@ export default function DashboardPage() {
           <section className="grid gap-3 md:grid-cols-4">
             <StatCard
               label="Study Hours"
-              value="47.5h"
-              helper="+12% vs last week"
+              value={`${stats.weekly_hours.toFixed(1)}h`}
+              helper={stats.weekly_hours > 0 ? "+ based on your sessions" : "No study sessions logged yet"}
             />
             <StatCard
               label="Topics Done"
-              value="28"
-              helper="Finish 3 more to hit goal"
+              value={stats.topics_done.toString()}
+              helper={stats.topics_done > 0 ? "Completed topics this week" : "Start by completing your first topic"}
             />
             <StatCard
               label="Quiz Score"
-              value="84%"
-              helper="+6% improvement"
+              value={`${stats.avg_quiz_score.toFixed(0)}%`}
+              helper={stats.avg_quiz_score > 0 ? "Average score across quizzes" : "No quizzes taken yet"}
             />
             <StatCard
               label="XP Points"
-              value="4,820"
-              helper="+320 today"
+              value={stats.xp_points.toString()}
+              helper={stats.xp_points > 0 ? "+XP earned from your activity" : "Earn XP by studying and quizzing"}
             />
           </section>
 

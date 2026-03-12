@@ -1,6 +1,71 @@
-import Link from "next/link";
+"use client";
 
-export default function RegisterPage() {
+import Link from "next/link";
+import { FormEvent, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signUpWithEmail, signInWithGoogle } from "@/lib/supabase/auth-helpers";
+
+function getSafeNext(next: string | null): string {
+  if (next && next.startsWith("/") && !next.startsWith("//")) return next;
+  return "/dashboard";
+}
+
+function RegisterForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath = getSafeNext(searchParams.get("next"));
+  const [loading, setLoading] = useState(false);
+  const [loadingGoogle, setLoadingGoogle] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  async function handleRegister(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setSuccessMessage(null);
+    setLoading(true);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const name = String(formData.get("name") || "");
+    const email = String(formData.get("email") || "");
+    const password = String(formData.get("password") || "");
+
+    const { data, error: signUpError } = await signUpWithEmail(email, password, {
+      full_name: name,
+    });
+
+    if (signUpError) {
+      setError(signUpError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (data.user && data.session) {
+      router.push(nextPath);
+      router.refresh();
+      return;
+    }
+
+    if (data.user && !data.session) {
+      setSuccessMessage(
+        "Check your email to confirm your account, then sign in."
+      );
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+  }
+
+  async function handleGoogleSignUp() {
+    setError(null);
+    setSuccessMessage(null);
+    setLoadingGoogle(true);
+    const { error: oauthError } = await signInWithGoogle(nextPath);
+    setLoadingGoogle(false);
+    if (oauthError) setError(oauthError.message);
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-8 text-slate-100">
       <div className="w-full max-w-md rounded-3xl border border-slate-800/80 bg-slate-950/90 p-6 shadow-2xl shadow-black/70 backdrop-blur-2xl md:p-8">
@@ -23,7 +88,7 @@ export default function RegisterPage() {
           Set up your EduPilot workspace in under a minute.
         </p>
 
-        <form className="mt-6 space-y-4">
+        <form className="mt-6 space-y-4" onSubmit={handleRegister}>
           <div className="space-y-1 text-sm">
             <label htmlFor="name" className="text-slate-200">
               Full name
@@ -31,6 +96,7 @@ export default function RegisterPage() {
             <input
               id="name"
               type="text"
+              name="name"
               autoComplete="name"
               required
               className="w-full rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm outline-none placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-1 focus:ring-blue-400/70"
@@ -45,6 +111,7 @@ export default function RegisterPage() {
             <input
               id="email"
               type="email"
+              name="email"
               autoComplete="email"
               required
               className="w-full rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm outline-none placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-1 focus:ring-blue-400/70"
@@ -59,6 +126,7 @@ export default function RegisterPage() {
             <input
               id="password"
               type="password"
+              name="password"
               autoComplete="new-password"
               required
               className="w-full rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm outline-none placeholder:text-slate-500 focus:border-blue-400/70 focus:ring-1 focus:ring-blue-400/70"
@@ -84,15 +152,42 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            className="mt-2 w-full rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-blue-500 px-4 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-amber-500/40"
+            disabled={loading}
+            className="mt-2 w-full rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-blue-500 px-4 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-amber-500/40 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Create account
+            {loading ? "Creating account..." : "Create account with Email"}
           </button>
         </form>
 
+        {error && (
+          <p className="mt-3 text-sm text-amber-300">{error}</p>
+        )}
+        {successMessage && (
+          <p className="mt-3 text-sm text-emerald-300/90">{successMessage}</p>
+        )}
+
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={handleGoogleSignUp}
+            disabled={loadingGoogle}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-2.5 text-sm font-medium text-slate-100 hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <span className="h-4 w-4 rounded-full bg-slate-300" />
+            {loadingGoogle ? "Redirecting..." : "Sign up with Google"}
+          </button>
+        </div>
+
         <p className="mt-4 text-center text-xs text-slate-400">
           Already have an account?{" "}
-          <Link href="/login" className="text-amber-300 hover:text-amber-200">
+          <Link
+            href={
+              nextPath !== "/dashboard"
+                ? `/login?next=${encodeURIComponent(nextPath)}`
+                : "/login"
+            }
+            className="text-amber-300 hover:text-amber-200"
+          >
             Sign in
           </Link>
         </p>
@@ -101,3 +196,16 @@ export default function RegisterPage() {
   );
 }
 
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-400">
+          Loading…
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
+  );
+}

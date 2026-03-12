@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { UserMenu } from "@/components/user-menu";
 
 export function Topbar() {
   return (
@@ -25,18 +26,19 @@ export function Topbar() {
         <span className="hidden rounded-full border border-amber-500/60 bg-amber-500/10 px-3 py-1 text-[11px] font-medium text-amber-200 md:inline-flex">
           14d
         </span>
-        <button className="hidden rounded-full border border-slate-700/70 bg-slate-900/80 px-3 py-2 font-medium text-amber-100 shadow-lg shadow-amber-500/30 transition hover:border-amber-400/80 hover:bg-slate-900 md:inline-flex">
-          Generate Notes
-        </button>
-        <button className="rounded-full bg-gradient-to-r from-sky-500 to-blue-500 px-3 py-2 text-xs font-semibold text-slate-950 shadow-lg shadow-blue-500/40">
-          Ask AI Tutor
-        </button>
         <Link
-          href="/profile"
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-slate-200 to-slate-400 text-xs font-semibold text-slate-900 shadow-md shadow-black/40 md:h-9 md:w-9"
+          href="/notes"
+          className="hidden rounded-full border border-slate-700/70 bg-slate-900/80 px-3 py-2 font-medium text-amber-100 shadow-lg shadow-amber-500/30 transition hover:border-amber-400/80 hover:bg-slate-900 md:inline-flex"
         >
-          A
+          Generate Notes
         </Link>
+        <Link
+          href="/tutor"
+          className="rounded-full bg-gradient-to-r from-sky-500 to-blue-500 px-3 py-2 text-xs font-semibold text-slate-950 shadow-lg shadow-blue-500/40"
+        >
+          Ask AI Tutor
+        </Link>
+        <UserMenu />
       </div>
     </header>
   );
