@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signUpWithEmail, signInWithGoogle } from "@/lib/supabase/auth-helpers";
+import { useAuth } from "@/hooks/useAuth";
 
 function getSafeNext(next: string | null): string {
   if (next && next.startsWith("/") && !next.startsWith("//")) return next;
@@ -14,6 +14,7 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = getSafeNext(searchParams.get("next"));
+  const { signup, oauthLogin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,30 +33,19 @@ function RegisterForm() {
       const password = String(formData.get("password") || "");
       const goal = String(formData.get("goal") || "");
 
-      const { data, error: signUpError } = await signUpWithEmail(email, password, {
-        full_name: name,
-        primary_learning_goal: goal || undefined,
+      const result = await signup({
+        fullName: name,
+        email,
+        password,
+        learningGoal: goal || "student",
       });
-
-      if (signUpError) {
-        setError(signUpError.message);
-        setLoading(false);
-        return;
-      }
-
-      if (data.user && data.session) {
-        router.push(nextPath);
-        router.refresh();
-        return;
-      }
-
-      if (data.user && !data.session) {
-        setSuccessMessage("Check your email to confirm your account, then sign in.");
-        setLoading(false);
-        return;
-      }
-
       setLoading(false);
+      if (result.status === "verify_email") {
+        setSuccessMessage("Verify your email to continue");
+        return;
+      }
+      router.push("/onboarding");
+      router.refresh();
     } catch (e) {
       const message = e instanceof Error ? e.message : "Unable to create account.";
       setError(message);
@@ -68,17 +58,8 @@ function RegisterForm() {
     setSuccessMessage(null);
     setLoadingGoogle(true);
     try {
-      const { data, error: oauthError } = await signInWithGoogle(nextPath);
+      await oauthLogin("google", nextPath);
       setLoadingGoogle(false);
-      if (oauthError) {
-        setError(oauthError.message);
-        return;
-      }
-      if (data?.url && typeof window !== "undefined") {
-        window.location.assign(data.url);
-        return;
-      }
-      setError("Unable to start Google sign-up. Please try again.");
     } catch (e) {
       const message =
         e instanceof Error ? e.message : "Unable to start Google sign-up.";

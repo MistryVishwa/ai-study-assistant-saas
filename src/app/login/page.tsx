@@ -3,12 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  signInWithPassword,
-  signInWithGoogle,
-  signInWithOtpPhone,
-  verifyPhoneOtp,
-} from "@/lib/supabase/auth-helpers";
+import { useAuth } from "@/hooks/useAuth";
 
 function getSafeNext(next: string | null): string {
   if (next && next.startsWith("/") && !next.startsWith("//")) return next;
@@ -19,11 +14,14 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = getSafeNext(searchParams.get("next"));
+  const { login, oauthLogin, phoneLoginSend, phoneLoginVerify, magicLink } =
+    useAuth();
 
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingPhoneSend, setLoadingPhoneSend] = useState(false);
   const [loadingPhoneVerify, setLoadingPhoneVerify] = useState(false);
+  const [loadingMagic, setLoadingMagic] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [otpSent, setOtpSent] = useState(false);
   const [phoneForOtp, setPhoneForOtp] = useState("");
@@ -38,16 +36,7 @@ function LoginForm() {
       const email = String(formData.get("email") || "");
       const password = String(formData.get("password") || "");
 
-      const { error: signInError } = await signInWithPassword(email, password);
-
-      if (signInError) {
-        setError(
-          signInError.message ||
-            "Please register first or check your password."
-        );
-        setLoadingEmail(false);
-        return;
-      }
+      await login({ email, password });
 
       router.push(nextPath);
       router.refresh();
@@ -62,17 +51,8 @@ function LoginForm() {
     setError(null);
     setLoadingGoogle(true);
     try {
-      const { data, error: oauthError } = await signInWithGoogle(nextPath);
+      await oauthLogin("google", nextPath);
       setLoadingGoogle(false);
-      if (oauthError) {
-        setError(oauthError.message);
-        return;
-      }
-      if (data?.url && typeof window !== "undefined") {
-        window.location.assign(data.url);
-        return;
-      }
-      setError("Unable to start Google sign-in. Please try again.");
     } catch (e) {
       const message =
         e instanceof Error ? e.message : "Unable to start Google sign-in.";
@@ -93,12 +73,8 @@ function LoginForm() {
         return;
       }
       setLoadingPhoneSend(true);
-      const { error: otpError } = await signInWithOtpPhone(phone);
+      await phoneLoginSend(phone);
       setLoadingPhoneSend(false);
-      if (otpError) {
-        setError(otpError.message);
-        return;
-      }
       setPhoneForOtp(phone);
       setOtpSent(true);
     } catch (e) {
@@ -121,17 +97,37 @@ function LoginForm() {
         return;
       }
       setLoadingPhoneVerify(true);
-      const { error: verifyError } = await verifyPhoneOtp(phoneForOtp, token);
+      await phoneLoginVerify(phoneForOtp, token);
       setLoadingPhoneVerify(false);
-      if (verifyError) {
-        setError(verifyError.message);
-        return;
-      }
       router.push(nextPath);
       router.refresh();
     } catch (e) {
       const message = e instanceof Error ? e.message : "Unable to verify code.";
       setLoadingPhoneVerify(false);
+      setError(message);
+    }
+  }
+
+  async function handleMagicLink(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    try {
+      const email =
+        (typeof document !== "undefined" &&
+          (document.querySelector('input[name="email"]') as HTMLInputElement | null)
+            ?.value) ||
+        "";
+      if (!email) {
+        setError("Enter your email to receive a magic link.");
+        return;
+      }
+      setLoadingMagic(true);
+      await magicLink(email, nextPath);
+      setLoadingMagic(false);
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Unable to send magic link.";
+      setLoadingMagic(false);
       setError(message);
     }
   }
@@ -293,6 +289,16 @@ function LoginForm() {
           className="mt-2 w-full rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loadingEmail ? "Signing in..." : "Continue with Email"}
+        </button>
+      </form>
+
+      <form className="mt-3" onSubmit={handleMagicLink}>
+        <button
+          type="submit"
+          disabled={loadingMagic}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-2.5 text-sm font-medium text-slate-100 hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loadingMagic ? "Sending link..." : "Continue with Magic Link"}
         </button>
       </form>
 
